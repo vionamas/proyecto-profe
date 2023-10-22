@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/pelis', async (req, res) => {
-   const [rows] =  await pool.query('SELECT * from Peliculas' )
+   const [rows] =  await pool.query('SELECT * from peliculas' )
 
     console.log(rows);
     res.json(rows);
