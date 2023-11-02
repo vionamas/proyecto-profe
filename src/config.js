@@ -11,9 +11,13 @@ export const TMDB_TOKEN_AUTH = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5OGZlZTM0N2I5MWR
 export const TMDB_FETCH_OPTIONS  = {
     method: 'GET',
     headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer ' + TMDB_TOKEN_AUTH
-    }
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + TMDB_TOKEN_AUTH,
+      'Access-Control-Allow-Origin' : '*' // Configura el encabezado CORS
+    // Otras cabeceras personalizadas que puedas necesitar
+    },
+    mode: 'cors', // Establece el modo CORS
+    credentials: 'same-origin', // Configura las credenciales de la solicitud
   };
 export const TMDB_IMAGE ='';
 export const TMDB_LANG ='es';

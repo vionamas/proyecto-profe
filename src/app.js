@@ -31,6 +31,8 @@ app.get('/client/', (req, res) => {
 })
 /* mostramos pelicula de tmdb */
 
+
+
 app.post('/api/pelis/tmdb/:tmdb_id', async (req, res) => {
      //console.log(req) 
      const tmdb_id = req.params.tmdb_id;
