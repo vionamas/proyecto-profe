@@ -3,25 +3,67 @@ import {pool} from './db.js';
 import {PORT, TMDB_FETCH_OPTIONS,TMDB_LANG} from './config.js';
 
 const app = express();
+// Agrega el middleware de análisis del cuerpo del mensaje para procesar solicitudes POST
+app.use(express.json()); // Para JSON
+app.use(express.urlencoded({ extended: true })); // Para formularios codificados
 
 app.get('/', (req, res) => {
     res.send('Benviguts');
 })
 app.get('/api', (req, res) => {
-    const respuesta = '<H1>API PELICULAS</H1>';
-    res.send(respuesta)
+    res.redirect('https://documenter.getpostman.com/view/25347432/2s9YXe6P7e');
+    // redireccion a la pagina de POSTMAN donde esta publicada la documentación
 })
 
 app.get('/api/pelis', async (req, res) => {
     const [rows] =  await pool.query('SELECT * from peliculas' )
+    //const [rows] =  await pool.query('SELECT * from peliculas,peli_genero, genero where peliculas.id = peli_genero.peliculaid and peli_genero.generoid = genero.id' )
     console.log(rows);
     res.json(rows);
 })
 
-app.post('/api/pelis', async (req, res) => {
-    const params = req.params;
-    console.log(rows);
-    res.json(rows);
+app.get('/api/pelis2', async (req, res) => {
+    
+    const query = 'SELECT p.id, p.titulo, p.tmdb_id, p.poster, g.id AS genero_id, g.genero AS genero FROM peliculas p     LEFT JOIN peli_genero pg ON p.id = pg.peliculaid     LEFT JOIN genero g ON pg.generoid = g.id';
+
+    const [rows] =  await pool.query(query )
+    const moviesWithGenres = [];
+    const moviesMap = new Map();
+
+    for (const row of rows) {
+        const { id, titulo, tmdb_id, poster, genero_id, genero } = row;
+        if (!moviesMap.has(tmdb_id)) {
+            moviesMap.set(tmdb_id, {
+                id,
+                titulo,
+                tmdb_id,
+                poster,
+                generos: [],
+            });
+        }
+        if (genero_id) {
+            moviesMap.get(tmdb_id).generos.push({ id: genero_id, genero });
+        }
+    }
+
+    const results = [...moviesMap.values()];
+    const resultadoJSON = { results };
+
+    //console.log(resultadoJSON);  
+    //console.log(rows);
+    res.json(resultadoJSON);
+})
+
+app.post('/api/post',  (req, res) => {
+    const params = req.body;
+    console.log( req.body);
+    let texto = ''
+    for (const key in req.body) 
+    {
+        console.log(key + ': ' + req.body[key]);
+        texto += key + ': ' + req.body[key]  + '|';
+    }
+    res.send(texto);
 })
 
 
