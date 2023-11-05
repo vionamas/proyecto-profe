@@ -76,13 +76,28 @@ app.get('/client/', (req, res) => {
 
 
 app.post('/api/pelis/tmdb/:tmdb_id', async (req, res) => {
-     //console.log(req) 
+     //console.log(req)
+     // recuperar los datos la api que necesitamos
      const tmdb_id = req.params.tmdb_id;
      fetch(`https://api.themoviedb.org/3/movie/${tmdb_id}?language=${TMDB_LANG}`, TMDB_FETCH_OPTIONS)
      .then(response => response.json())
-     .then(response => {
-         console.log(response)   
-         res.json(response)
+     .then(async response =>  {
+        // creas registro a a partir de los valores de la api. 
+        let query = `INSERT INTO peliculas  (tmdb_id,titulo,poster,estado,estreno,overview,opinion) VALUES (${response.id},'${response.original_title}','${response.poster_path}','D','${response.release_date}','${response.overview}','valor')`;
+        const [result] = await pool.query(query);
+        // obtenemos el id de la ultima query 
+        const peliculaId = result.insertId;     
+        console.log(query);
+        // leemos los generos de la peli y generamos los registros en peli_genero
+        const generos = response.genres;
+        for (const genero of generos){
+            let query = `INSERT INTO peli_genero (peliculaid,generoid) VALUES (${peliculaId}, ${genero.id})`; 
+            pool.query(query);
+            console.log (query);
+        }
+        // generamos respuesta indicando id de pelicula insertada
+        const respuesta = JSON.parse( `{"respuesta":200,"id":"${peliculaId}"}`);
+         res.json(respuesta);
      
      }) 
      .catch(err => {

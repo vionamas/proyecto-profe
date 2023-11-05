@@ -14,9 +14,11 @@ API que accede a la las peliculas la pagina http://www.themoviedb.org para delec
 
    ```bash
    git clone https://github.com/albertomozo/node_express_mysql.git
+   ```
 
    ```bash	
    cd nombre-del-repo
+   ```
 
 2. Instala las dependencias
 
