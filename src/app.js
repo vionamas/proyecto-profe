@@ -8,8 +8,10 @@ app.use(express.json()); // Para JSON
 app.use(express.urlencoded({ extended: true })); // Para formularios codificados
 
 app.get('/', (req, res) => {
-    res.send('Benviguts');
+    res.send('<h1>Benviguts</h1>');
 })
+
+// url base de la api
 app.get('/api', (req, res) => {
     res.redirect('https://documenter.getpostman.com/view/25347432/2s9YXe6P7e');
     // redireccion a la pagina de POSTMAN donde esta publicada la documentación
@@ -19,6 +21,16 @@ app.get('/api/pelis', async (req, res) => {
     const [rows] =  await pool.query('SELECT * from peliculas' )
     //const [rows] =  await pool.query('SELECT * from peliculas,peli_genero, genero where peliculas.id = peli_genero.peliculaid and peli_genero.generoid = genero.id' )
     console.log(rows);
+    res.json(rows);
+})
+
+app.delete('/api/pelis/:id', async (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    const delete1 = `delete from peliculas where id = ${id}`;
+    const [rows] =  await pool.query(`delete from peliculas where id = ${req.params.id}` );
+    const [rows2] =  await pool.query(`delete from peli_genero  where peliculaid = ${req.params.id}` ); 
+    console.log(delete1);
     res.json(rows);
 })
 
