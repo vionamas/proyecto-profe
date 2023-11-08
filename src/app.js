@@ -8,7 +8,7 @@ app.use(express.json()); // Para JSON
 app.use(express.urlencoded({ extended: true })); // Para formularios codificados
 
 app.get('/', (req, res) => {
-    res.send('<h1>Benviguts</h1>');
+    res.send('<h1>Benvinguts</h1>');
 })
 
 // url base de la api
@@ -23,6 +23,28 @@ app.get('/api/pelis', async (req, res) => {
     console.log(rows);
     res.json(rows);
 })
+
+app.get('/api/generos', async (req, res) => {
+    const [rows] =  await pool.query('SELECT * from genero' )
+    //const [rows] =  await pool.query('SELECT * from peliculas,peli_genero, genero where peliculas.id = peli_genero.peliculaid and peli_genero.generoid = genero.id' )
+    console.log(rows);
+    res.json(rows);
+})
+
+app.get('/api/pelis/genero/:generoid', async (req, res) => {
+    const generoid = parseInt(req.params.generoid);
+    let rows = [];
+    if (isNaN(generoid)){
+    rows = JSON.parse('{"error": "el genero no es válido"}')
+    } else{
+    let [rows] =  await pool.query(`SELECT * FROM peliculas p, peli_genero pg
+    WHERE p.id = pg.peliculaid AND pg.generoid = ${generoid}`)
+}
+    //const [rows] =  await pool.query('SELECT * from peliculas,peli_genero, genero where peliculas.id = peli_genero.peliculaid and peli_genero.generoid = genero.id' )
+    console.log(rows);
+    res.json(rows);
+})
+
 
 app.delete('/api/pelis/:id', async (req, res) => {
     const id = req.params.id;
